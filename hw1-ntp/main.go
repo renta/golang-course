@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/renta/golang-course/hw1-ntp/ntp_adapter"
+	"github.com/renta/golang-course/hw1-ntp/internal/ntp"
 	"os"
 	"time"
 )
 
 func main() {
-	fmt.Printf("begin to ask for ntp time to a host %s \n", ntp_adapter.NtpHost)
+	fmt.Printf("begin to ask for ntp time to a host %s \n", ntp.NtpHost)
 
-	//ntpTime, err := ntp_adapter.GetNtpTimeSimple()
-	ntpTime, err := ntp_adapter.GetNtpTimeComplex()
+	//ntpTime, err := internal.GetNtpTimeSimple()
+	ntpTime, err := ntp.GetNtpTimeComplex()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error after query to ntp host %s, message: %s \n", ntp_adapter.NtpHost, err.Error())
+		fmt.Fprintf(os.Stderr, "error after query to ntp host %s, message: %s \n", ntp.NtpHost, err.Error())
 		os.Exit(1)
 	}
 

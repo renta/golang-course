@@ -1,4 +1,4 @@
-package ntp_adapter
+package ntp
 
 import (
 	"github.com/beevik/ntp"
