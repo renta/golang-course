@@ -19,11 +19,13 @@ func Test_stringRepack(t *testing.T) {
 		{"", `qwe\45`,"qwe44444"},
 		{"", `qwe5\4`,"qweeeee4"},
 		{"", `qwe\\5`,`qwe\\\\\`},
+		{"", `q\we`,""},
+		{"", "ab/c","ab/c"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := internal.StringRepack(tt.input); got != tt.want {
-				t.Errorf("stringRepack() = %v, want %v", got, tt.want)
+			if got, err := internal.StringRepack(tt.input); got != tt.want {
+				t.Errorf("stringRepack() = %v, want %v, err %v", got, tt.want, err)
 			}
 		})
 	}

@@ -15,16 +15,19 @@ func main() {
 		`qwe\45`:     "qwe44444",
 		`qwe5\4`:     "qweeeee4",
 		`qwe\\5`:     `qwe\\\\\`,
+		`q\we`:       "",
+		"ab/c":       "ab/c",
 	}
 
 	for input, desiredOutput := range testStrings {
-		res := internal.StringRepack(input)
+		res, err := internal.StringRepack(input)
 		fmt.Printf(
-			"Input string: %s and the result should be: %s and the result is: %s does they are equal: %t\n",
+			"Input string: %s and the result should be: %s and the result is: %s does they are equal: %t error is: %v\n",
 			input,
 			desiredOutput,
 			res,
 			desiredOutput == res,
+			err,
 		)
 	}
 }
