@@ -10,7 +10,7 @@ func isBackslashOrNumberWasBackslashed(isEscape bool, symbol rune) bool {
 	return isEscape == true && isNumberOrBackslash(symbol) == false
 }
 
-func isValidSymbol(isEscape bool, symbol rune) bool {
+func isValidSymbolToWrite(isEscape bool, symbol rune) bool {
 	//                                 int32 for / symbol
 	return unicode.IsLetter(symbol) || symbol == 47 || (isEscape == true && isNumberOrBackslash(symbol) == true)
 }
@@ -24,9 +24,9 @@ func needToRepeatSymbol(isEscape bool, symbol rune) bool {
 }
 
 func StringRepack(s string) (string, error) {
-	var result []string
+	var result strings.Builder
 
-	var letterToPush string
+	var letterToPush rune
 	var isEscape bool
 
 	for _, symbol := range s {
@@ -37,18 +37,18 @@ func StringRepack(s string) (string, error) {
 			isEscape = true
 			continue
 		}
-		if isValidSymbol(isEscape, symbol) {
-			letterToPush = string(symbol)
-			result = append(result, letterToPush)
+		if isValidSymbolToWrite(isEscape, symbol) {
+			letterToPush = symbol
+			result.WriteRune(symbol)
 			isEscape = false
 			continue
 		}
-		if needToRepeatSymbol(isEscape, symbol) {
+		if needToRepeatSymbol(isEscape, symbol) && letterToPush != 0 {
 			for i := 0; i < int(symbol-'1'); i++ {
-				result = append(result, letterToPush)
+				result.WriteRune(letterToPush)
 			}
 		}
 	}
 
-	return strings.Join(result, ""), nil
+	return result.String(), nil
 }
