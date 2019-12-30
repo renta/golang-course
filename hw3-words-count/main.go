@@ -17,7 +17,7 @@ func main() {
 			CountedWordsMap: make(map[string]int),
 			NumbersOfWords:  make(map[int][]string),
 		}
-		wordsCounter.Top10(oneString)
+		res := wordsCounter.Top10(oneString)
 		/*for word, numberOfCount := range wordsCounter.NumbersOfWords {
 			log.Printf("word %s occurs %d times in string", numberOfCount, word)
 		}
@@ -25,7 +25,7 @@ func main() {
 			log.Printf("times: %d occurs words: %v", numberOfCount, words)
 		}*/
 		log.Println("------------------------------------")
-		for _, resultString := range wordsCounter.FormTheResult() {
+		for _, resultString := range res {
 			log.Println(resultString)
 		}
 		log.Println("------------------------------------")

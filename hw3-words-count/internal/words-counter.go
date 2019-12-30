@@ -14,18 +14,12 @@ type WordsCounter struct {
 	TopTenNumbers   []int
 }
 
-func(w *WordsCounter) FormTheResult()[]string {
-	var resultSlice []string
-	for _, number := range w.TopTenNumbers {
-		resultSlice = append(resultSlice, fmt.Sprintf("times: %d occurs words: %v", number, w.NumbersOfWords[number]))
-	}
-	return resultSlice
-}
-
-func (w *WordsCounter) Top10(text string) {
+func (w *WordsCounter) Top10(text string) []string {
 	w.countWords(text)
 	w.summariseCountedWords()
 	w.getTopTenWords()
+
+	return w.formTheResult()
 }
 
 func (w *WordsCounter) countWords(stringToCount string) {
@@ -35,7 +29,7 @@ func (w *WordsCounter) countWords(stringToCount string) {
 		if err != nil {
 			continue
 		}
-		if numberOfCount, ok := w.CountedWordsMap[preparedWord]; ok == true {
+		if numberOfCount, ok := w.CountedWordsMap[preparedWord]; ok {
 			w.CountedWordsMap[preparedWord] = numberOfCount + 1
 		} else {
 			w.CountedWordsMap[preparedWord] = 1
@@ -71,4 +65,12 @@ func (w *WordsCounter) getTopTenWords() {
 			w.TopTenNumbers = append(w.TopTenNumbers, val)
 		}
 	}
+}
+
+func (w *WordsCounter) formTheResult() []string {
+	var resultSlice []string
+	for _, number := range w.TopTenNumbers {
+		resultSlice = append(resultSlice, fmt.Sprintf("times: %d occurs words: %v", number, w.NumbersOfWords[number]))
+	}
+	return resultSlice
 }
