@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/renta/golang-course/hw3-words-count/internal"
+	"github.com/renta/golang-course/hw3-words-count/internal/counter"
 	"log"
 )
 
@@ -13,17 +13,11 @@ func main() {
 	}
 
 	for _, oneString := range textForTest {
-		var wordsCounter = internal.WordsCounter{
+		var wordsCounter = counter.WordsCounter{
 			CountedWordsMap: make(map[string]int),
 			NumbersOfWords:  make(map[int][]string),
 		}
 		res := wordsCounter.Top10(oneString)
-		/*for word, numberOfCount := range wordsCounter.NumbersOfWords {
-			log.Printf("word %s occurs %d times in string", numberOfCount, word)
-		}
-		for numberOfCount, words := range wordsCounter.NumbersOfWords {
-			log.Printf("times: %d occurs words: %v", numberOfCount, words)
-		}*/
 		log.Println("------------------------------------")
 		for _, resultString := range res {
 			log.Println(resultString)

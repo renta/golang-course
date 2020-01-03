@@ -1,8 +1,7 @@
-package internal
+package counter
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"sort"
 	"strings"
@@ -23,29 +22,21 @@ func (w *WordsCounter) Top10(text string) []string {
 }
 
 func (w *WordsCounter) countWords(stringToCount string) {
-	var splittedString = strings.Split(stringToCount, " ")
+	splittedString := strings.Split(stringToCount, " ")
 	for _, wordAfterSplit := range splittedString {
-		var preparedWord, err = prepareWord(wordAfterSplit)
-		if err != nil {
+		preparedWord := prepareWord(wordAfterSplit)
+		if preparedWord == "" {
 			continue
 		}
-		if numberOfCount, ok := w.CountedWordsMap[preparedWord]; ok {
-			w.CountedWordsMap[preparedWord] = numberOfCount + 1
-		} else {
-			w.CountedWordsMap[preparedWord] = 1
-		}
+		w.CountedWordsMap[preparedWord]++
 	}
 }
 
-func prepareWord(word string) (string, error) {
-	regex, err := regexp.Compile("[^a-zA-Z0-9]+")
-	if err != nil {
-		log.Fatal(err)
-		return "", err
-	}
+func prepareWord(word string) string {
+	regex := regexp.MustCompile("[^a-zA-Z0-9]+")
 	word = regex.ReplaceAllString(word, "")
 
-	return strings.ToLower(strings.Trim(word, "")), nil
+	return strings.ToLower(strings.Trim(word, ""))
 }
 
 func (w *WordsCounter) summariseCountedWords() {
@@ -70,6 +61,7 @@ func (w *WordsCounter) getTopTenWords() {
 func (w *WordsCounter) formTheResult() []string {
 	var resultSlice []string
 	for _, number := range w.TopTenNumbers {
+		sort.Strings(w.NumbersOfWords[number])
 		resultSlice = append(resultSlice, fmt.Sprintf("times: %d occurs words: %v", number, w.NumbersOfWords[number]))
 	}
 	return resultSlice
