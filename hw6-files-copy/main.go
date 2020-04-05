@@ -3,57 +3,18 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io"
+	"github.com/renta/golang-course/hw6-files-copy/internal/file"
 	"io/ioutil"
-	"os"
 )
-
-func Copy(from string, to string, limit int, offset int) error {
-
-	buf := make([]byte, limit)
-
-	readFile, err := os.Open(from)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := readFile.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	_, err = readFile.ReadAt(buf, int64(offset))
-	//fmt.Printf("n = %v err = %v b = %v\n", read, err, buf)
-	//fmt.Printf("b[:n] = %q\n", buf[:read])
-	if err == io.EOF {
-		return nil
-	}
-	if err != nil {
-		return err
-	}
-
-	writeFile, err := os.OpenFile(to, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		return err
-	}
-	_, err = writeFile.Write(buf)
-	if err != nil {
-		return err
-	}
-	err = writeFile.Close()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 func main() {
 	for i := 0; i < 3; i++ {
 		bytesLimit := 1024
-		err := Copy("voyna-i-mir.txt", "result.txt", bytesLimit, bytesLimit*i)
+		writtenBytes, err := file.Copy("voyna-i-mir.txt", "result.txt", bytesLimit*i, bytesLimit)
 		if err != nil {
 			fmt.Println(fmt.Errorf("error while copying files with error %v", err.Error()))
+		} else {
+			fmt.Println(fmt.Sprintf("bytes were written %d", writtenBytes))
 		}
 	}
 
