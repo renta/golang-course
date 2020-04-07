@@ -1,12 +1,9 @@
 package file
 
 import (
-	"errors"
 	"io"
 	"os"
 )
-
-var CopyMisconfiguration = errors.New("wrong parameter for Copy function")
 
 func Copy(from string, to string, offset int, limit int) (int, error) {
 	if from == "" || to == "" || offset < 0 || limit < 0 {
@@ -24,21 +21,22 @@ func Copy(from string, to string, offset int, limit int) (int, error) {
 		}
 	}()
 
-	if limit == 0 {
-		fi, err := readFile.Stat()
-		if err != nil {
-			return written, err
-		}
-		limit = int(fi.Size()) - offset
+	fi, err := readFile.Stat()
+	if err != nil {
+		return written, err
+	}
+	remainPartToCopy := int(fi.Size()) - offset
+	if limit == 0 || limit > remainPartToCopy {
+		limit = remainPartToCopy
 	}
 
 	buf := make([]byte, limit)
 
-	_, err = readFile.ReadAt(buf, int64(offset))
-	if err == io.EOF {
+	read, err := readFile.ReadAt(buf, int64(offset))
+	if err == io.EOF && read == 0 {
 		return written, nil
 	}
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return written, err
 	}
 

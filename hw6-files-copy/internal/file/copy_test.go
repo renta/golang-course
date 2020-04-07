@@ -1,8 +1,6 @@
 package file
 
 import (
-	"bytes"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -25,7 +23,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestCopyWhole(t *testing.T) {
-	fileSize, err := getFileSize(FileCopyFrom)
+	fileSize, err := GetFileSize(FileCopyFrom)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -81,7 +79,7 @@ func TestCopyWithOffsetToEnd(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	copiedFileSize, err := getFileSize(FileCopyFrom)
+	copiedFileSize, err := GetFileSize(FileCopyFrom)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -95,7 +93,7 @@ func TestCopyWithOffsetToEnd(t *testing.T) {
 }
 
 func TestCopyNoOffsetNoLimit(t *testing.T) {
-	fileSize, err := getFileSize(FileCopyFrom)
+	fileSize, err := GetFileSize(FileCopyFrom)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -107,6 +105,27 @@ func TestCopyNoOffsetNoLimit(t *testing.T) {
 	}
 
 	if writtenBytes != fileSize || !isFilesAreEqual(t, FileCopyFrom, fileNameForCopied) {
+		t.Errorf("result file is not equal to givven one")
+	} else {
+		deleteFile(fileNameForCopied)
+	}
+}
+
+func TestCopyWithOffsetAndLimitHigherThanEOF(t *testing.T) {
+	fileNameForCopied := copiedFileNameFromPattern("copy_part_with_offset_and_lim_eof")
+	bytesOffset := 285
+	writtenBytes, err := Copy(FileCopyFrom, fileNameForCopied, bytesOffset, 50)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	copiedFileSize, err := GetFileSize(FileCopyFrom)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	bytesToCopy := copiedFileSize - bytesOffset
+
+	if writtenBytes != bytesToCopy || !fileContentEqualToString(t, fileNameForCopied, "99_100") {
 		t.Errorf("result file is not equal to givven one")
 	} else {
 		deleteFile(fileNameForCopied)
@@ -150,14 +169,6 @@ func TestWrongFuncParams(t *testing.T) {
 	}
 }
 
-func getFileSize(fileName string) (int, error) {
-	fi, err := os.Stat(fileName)
-	if err != nil {
-		return 0, err
-	}
-	return int(fi.Size()), nil
-}
-
 func createFileCopyFrom() error {
 	var fileContent string
 	for i := 1; i <= 100; i++ {
@@ -188,34 +199,4 @@ func createFileCopyFrom() error {
 
 func copiedFileNameFromPattern(replTo string) string {
 	return strings.Replace(FileCopyToPattern, "%s", replTo, 1)
-}
-
-func deleteFile(fileName string) {
-	err := os.Remove(fileName)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func fileContentEqualToString(t *testing.T, file string, content string) bool {
-	resultFile, err := ioutil.ReadFile(file)
-	if err != nil {
-		t.Errorf("can not open %s", file)
-	}
-
-	return bytes.Equal(resultFile, []byte(content))
-}
-
-func isFilesAreEqual(t *testing.T, first string, second string) bool {
-	resultFile, err := ioutil.ReadFile(first)
-	if err != nil {
-		t.Errorf("can not open %s", first)
-	}
-
-	referenceFile, err := ioutil.ReadFile(second)
-	if err != nil {
-		t.Errorf("can not open %s", second)
-	}
-
-	return bytes.Equal(resultFile, referenceFile)
 }
