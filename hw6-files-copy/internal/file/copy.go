@@ -2,6 +2,7 @@ package file
 
 import (
 	"io"
+	"log"
 	"os"
 )
 
@@ -17,15 +18,15 @@ func Copy(from string, to string, offset int, limit int) (int, error) {
 	}
 	defer func() {
 		if err := readFile.Close(); err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}()
 
-	fi, err := readFile.Stat()
+	fileInfo, err := readFile.Stat()
 	if err != nil {
 		return written, err
 	}
-	remainPartToCopy := int(fi.Size()) - offset
+	remainPartToCopy := int(fileInfo.Size()) - offset
 	if limit == 0 || limit > remainPartToCopy {
 		limit = remainPartToCopy
 	}

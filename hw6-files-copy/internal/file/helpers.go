@@ -3,29 +3,30 @@ package file
 import (
 	"bytes"
 	"io/ioutil"
+	"log"
 	"os"
 	"testing"
 )
 
 func GetFileSize(fileName string) (int, error) {
-	fi, err := os.Stat(fileName)
+	fileInfo, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
 		return 0, CopyFileIsNotExists
 	}
 	if err != nil {
 		return 0, err
 	}
-	if fi.IsDir() {
+	if fileInfo.IsDir() {
 		return 0, CopyFileIsDirectory
 	}
 
-	return int(fi.Size()), nil
+	return int(fileInfo.Size()), nil
 }
 
 func deleteFile(fileName string) {
 	err := os.Remove(fileName)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 

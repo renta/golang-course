@@ -1,6 +1,7 @@
 package file
 
 import (
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -15,7 +16,7 @@ const (
 func TestMain(m *testing.M) {
 	err := createFileCopyFrom()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	code := m.Run()
 	deleteFile(FileCopyFrom)
